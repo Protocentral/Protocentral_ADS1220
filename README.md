@@ -31,11 +31,11 @@ Wiring with Arduino
 | SCLK            | Serial Clock         |  D13             |
 | DVDD            | Digital VDD          |  +5V             |
 | DGND            | Digital Gnd          |  Gnd             |
-| AN0-AN3         | Analog Input         |  Input           |
+| AN0-AN3         | Analog Input         |  Analog Input    |
 | AVDD            | Analog VDD           |  -               |
 | AGND            | Analog Gnd           |  -               |
   
-  
+  ** The example sketch is configured for internal Vref=2.048, give differential voltage across AN0 and AN1.
   
 
 Repository Contents
