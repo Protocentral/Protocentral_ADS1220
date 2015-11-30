@@ -21,8 +21,8 @@ Applications
 * RTD interfacing
 * High precision chemical sensors
 
-Wiring with Arduino
--------------------
+Wiring to your Arduino
+----------------------
 |ads1220 pin label| Pin Function         |Arduino Connection|
 |-----------------|:--------------------:|-----------------:|
 | DRDY            | Data ready Output pin|  D6              |             
