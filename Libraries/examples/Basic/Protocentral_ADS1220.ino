@@ -1,10 +1,28 @@
+/************************************************************
+Protocentral_ADS1220.ino
+this example gives differential voltage across the AN0 And AN1 in mV
+Hooking-up with the Arduino
+|ads1220 pin label| Pin Function         |Arduino Connection|
+|-----------------|:--------------------:|-----------------:|
+| DRDY            | Data ready Output pin|  D6              |             
+| MISO            | Slave Out            |  D12             |
+| MOSI            | Slave In             |  D11             |
+| SCLK            | Serial Clock         |  D13             |
+| CS              | Chip Select          |  D7              |
+| DVDD            | Digital VDD          |  +5V             |
+| DGND            | Digital Gnd          |  Gnd             |
+| AN0-AN3         | Analog Input         |  Analog Input    |
+| AVDD            | Analog VDD           |  -               |
+| AGND            | Analog Gnd           |  -               |
+************************************************************/
+
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
 
-#define PGA 1
-#define VREF 2.048
-#define VFSR VREF/PGA
-#define FSR (((long int)1<<23)-1)
+#define PGA 1                 // Programmable Gain = 1
+#define VREF 2.048            // Internal reference of 2.048V
+#define VFSR VREF/PGA             
+#define FSR (((long int)1<<23)-1)  
 
 volatile byte MSB;
 volatile byte data;
