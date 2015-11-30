@@ -1,4 +1,4 @@
-/************************************************************
+/*************************************************************
 Protocentral_ADS1220.ino
 this example gives differential voltage across the AN0 And AN1 in mV
 Hooking-up with the Arduino
@@ -14,7 +14,7 @@ Hooking-up with the Arduino
 | AN0-AN3         | Analog Input         |  Analog Input    |
 | AVDD            | Analog VDD           |  -               |
 | AGND            | Analog Gnd           |  -               |
-************************************************************/
+*************************************************************/
 
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
