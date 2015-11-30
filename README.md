@@ -29,6 +29,7 @@ Wiring with Arduino
 | MISO            | Slave Out            |  D12             |
 | MOSI            | Slave In             |  D11             |
 | SCLK            | Serial Clock         |  D13             |
+| CS              | Chip Select          |  D7              |
 | DVDD            | Digital VDD          |  +5V             |
 | DGND            | Digital Gnd          |  Gnd             |
 | AN0-AN3         | Analog Input         |  Analog Input    |
