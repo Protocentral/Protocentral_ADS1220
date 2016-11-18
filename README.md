@@ -1,7 +1,7 @@
 ADS1220 Breakout Board
 =======================
 
-[![Ads1220](https://www.protocentral.com/3823-tm_thickbox_default/ads1220-24-bit-4-channel-low-noise-adc-breakout-board.jpg)  *ADS1220 24-bit, 4-channel Low Noise ADC Breakout Board (PC-4107)*](https://www.protocentral.com/analog-adc-boards/773-ads1220-24-bit-4-channel-low-noise-adc-breakout-board.html?search_query=ads1220&results=2)
+[![Ads1220](https://www.protocentral.com/analog-adc-boards/773-ads1220-24-bit-4-channel-low-noise-adc-breakout-board.html?search_query=ads1220&results=2)  *ADS1220 24-bit, 4-channel Low Noise ADC Breakout Board (PC-4107)*](https://www.protocentral.com/analog-adc-boards/773-ads1220-24-bit-4-channel-low-noise-adc-breakout-board.html?search_query=ads1220&results=2)
 
 Why would you need a 24-bit ADC? When 16-bit is just not enough. 
 If your design demands high precision analog measurements, this new breakout board for the ADS1220 24-bit Sigma-delta ADC can get the job done.
@@ -52,11 +52,11 @@ This product is open source! Both, our hardware and software are open source and
 
 Hardware
 ---------
-**All hardware is released under [Creative Commons Share-alike 4.0 International](http://creativecommons.org/licenses/by-sa/4.0/).**
+All hardware is released under [Creative Commons Share-alike 4.0 International](http://creativecommons.org/licenses/by-sa/4.0/).**
 ![CC-BY-SA-4.0](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)
 
 Software
 --------
-**All software is released under the MIT License(http://opensource.org/licenses/MIT).**
+All software is released under the MIT License(http://opensource.org/licenses/MIT).**
 
 Please check [*LICENSE.md*](LICENSE.md) for detailed license descriptions.
