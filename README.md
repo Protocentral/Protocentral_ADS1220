@@ -1,7 +1,7 @@
 ADS1220 Breakout Board
 =======================
 
-[![Ads1220](https://www.protocentral.com/3823-thickbox_default/ads1220-24-bit-4-channel-low-noise-adc-breakout-board.jpg)__
+[![Ads1220](https://www.protocentral.com/3823-thickbox_default/ads1220-24-bit-4-channel-low-noise-adc-breakout-board.jpg)_
 *24-bit, 4-channel Low Noise ADC Breakout Board (PC-4107)*](https://www.protocentral.com/analog-adc-boards/773-ads1220-24-bit-4-channel-low-noise-adc-breakout-board.html)
 
 Why would you need a 24-bit ADC? When 16-bit is just not enough. 
