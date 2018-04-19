@@ -1,6 +1,6 @@
 # ProtoCentral ADS1220 24-bit ADC Breakout Board
 
-[![ADS1220 Breakout](docs/images/ads1220_brk_0.jpg)
+![ADS1220 Breakout](docs/images/ads1220_brk_0.jpg)
 
 If you don't already have one, you can buy the ProtoCentral ADS1220 24-bit ADC Breakout Board from:
 
