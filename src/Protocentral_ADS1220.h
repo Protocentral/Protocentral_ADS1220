@@ -1,5 +1,24 @@
-//#ifndef ads1292r_h
-//#define ads1292r_h
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Arduino library for the ADS1220 24-bit ADC breakout board
+//
+//    Author: Ashwin Whitchurch
+//    Copyright (c) 2018 ProtoCentral
+//
+//    Based on original code from Texas Instruments
+//
+//    This software is licensed under the MIT License(http://opensource.org/licenses/MIT).
+//
+//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+//   NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+//   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+//   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+//   For information on how to use, visit https://github.com/Protocentral/Protocentral_ADS1220/
+/////////////////////////////////////////////////////////////////////////////////////////
+
 
 #include "Arduino.h"
 
@@ -61,7 +80,7 @@
 
 #define ADS1220_CS_PIN 7
 #define ADS1220_DRDY_PIN 6
-#define _BV(bit) (1<<(bit))  
+#define _BV(bit) (1<<(bit))
 
 class Protocentral_ADS1220
 {

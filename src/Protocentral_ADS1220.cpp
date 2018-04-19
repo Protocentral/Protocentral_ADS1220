@@ -1,18 +1,36 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Arduino library for the ADS1220 24-bit ADC breakout board
+//
+//    Author: Ashwin Whitchurch
+//    Copyright (c) 2018 ProtoCentral
+//
+//    Based on original code from Texas Instruments
+//
+//    This software is licensed under the MIT License(http://opensource.org/licenses/MIT).
+//
+//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+//   NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+//   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+//   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+//   For information on how to use, visit https://github.com/Protocentral/Protocentral_ADS1220/
+/////////////////////////////////////////////////////////////////////////////////////////
+
 #include <Arduino.h>
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
 
-
- 
 void Protocentral_ADS1220::writeRegister(uint8_t address, uint8_t value)
 {
   digitalWrite(ADS1220_CS_PIN,LOW);
   delay(5);
-  SPI.transfer(WREG|(address<<2));      	
-  SPI.transfer(value); 
+  SPI.transfer(WREG|(address<<2));
+  SPI.transfer(value);
   delay(5);
   digitalWrite(ADS1220_CS_PIN,HIGH);
-}  
+}
 
 uint8_t Protocentral_ADS1220::readRegister(uint8_t address)
 {
@@ -20,13 +38,13 @@ uint8_t Protocentral_ADS1220::readRegister(uint8_t address)
 
   digitalWrite(ADS1220_CS_PIN,LOW);
   delay(5);
-  SPI.transfer(RREG|(address<<2));      	
-  data = SPI.transfer(SPI_MASTER_DUMMY); 
+  SPI.transfer(RREG|(address<<2));
+  data = SPI.transfer(SPI_MASTER_DUMMY);
   delay(5);
   digitalWrite(ADS1220_CS_PIN,HIGH);
 
   return data;
-}  
+}
 
 
 void Protocentral_ADS1220::begin()
@@ -37,23 +55,23 @@ void Protocentral_ADS1220::begin()
   SPI.begin();                           // wake up the SPI bus.
   //SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE1);
-	
+
   delay(100);
-  SPI_Reset();                                            
-  delay(100);                                                    
+  SPI_Reset();
+  delay(100);
 
   digitalWrite(ADS1220_CS_PIN,LOW);
   /*SPI.transfer(WREG);           //WREG command (43h, 08h, 04h, 10h, and 00h)
-  SPI.transfer(0x01);      	
-  SPI.transfer(0x04);     
-  SPI.transfer(0x10);    
-  SPI.transfer(0x00);   
+  SPI.transfer(0x01);
+  SPI.transfer(0x04);
+  SPI.transfer(0x10);
+  SPI.transfer(0x00);
   */
   Config_Reg0 = 0x01;
   Config_Reg1 = 0x04;
   Config_Reg2 = 0x10;
   Config_Reg3 = 0x00;
-  
+
 
   writeRegister( CONFIG_REG0_ADDRESS , Config_Reg0);
   writeRegister( CONFIG_REG1_ADDRESS , Config_Reg1);
@@ -64,11 +82,11 @@ void Protocentral_ADS1220::begin()
   SPI.transfer(RREG);           //RREG
   data = SPI.transfer(SPI_MASTER_DUMMY);
   //Serial.println(data);
-  data = SPI.transfer(SPI_MASTER_DUMMY); 
+  data = SPI.transfer(SPI_MASTER_DUMMY);
   //Serial.println(data);
-  data = SPI.transfer(SPI_MASTER_DUMMY); 
+  data = SPI.transfer(SPI_MASTER_DUMMY);
   //Serial.println(data);
-  data = SPI.transfer(SPI_MASTER_DUMMY); 
+  data = SPI.transfer(SPI_MASTER_DUMMY);
   //Serial.println(data);
   */
 
@@ -105,7 +123,7 @@ void Protocentral_ADS1220::SPI_Command(unsigned char data_in)
 
 void Protocentral_ADS1220::SPI_Reset()
 {
-  SPI_Command(RESET);		                    			
+  SPI_Command(RESET);
 }
 
 void Protocentral_ADS1220::SPI_Start()
@@ -114,7 +132,7 @@ void Protocentral_ADS1220::SPI_Start()
 }
 
 
-Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors 
+Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 {
   Serial.begin(9600);	        	//115200 57600
   Serial.println("ads1220 class declared");
@@ -122,15 +140,15 @@ Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 }
 
 void Protocentral_ADS1220::PGA_ON(void)
-{	 
+{
   Config_Reg0 &= ~_BV(0);
-  writeRegister(CONFIG_REG0_ADDRESS,Config_Reg0);	
+  writeRegister(CONFIG_REG0_ADDRESS,Config_Reg0);
 }
 
 void Protocentral_ADS1220::PGA_OFF(void)
-{	 
+{
   Config_Reg0 |= _BV(0);
-  writeRegister(CONFIG_REG0_ADDRESS,Config_Reg0);	
+  writeRegister(CONFIG_REG0_ADDRESS,Config_Reg0);
 }
 
 void Protocentral_ADS1220::Continuous_conversion_mode_ON(void)
@@ -149,29 +167,29 @@ void Protocentral_ADS1220::Single_shot_mode_ON(void)
 void Protocentral_ADS1220::set_data_rate(int datarate)
 {
   Config_Reg1 &= ~REG_CONFIG_DR_MASK;
-  
+
   switch(datarate)
   {
     case(DR_20SPS):
-      Config_Reg1 |= REG_CONFIG_DR_20SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_20SPS;
       break;
     case(DR_45SPS):
-      Config_Reg1 |= REG_CONFIG_DR_45SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_45SPS;
       break;
     case(DR_90SPS):
-      Config_Reg1 |= REG_CONFIG_DR_90SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_90SPS;
       break;
     case(DR_175SPS):
-      Config_Reg1 |= REG_CONFIG_DR_175SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_175SPS;
       break;
     case(DR_330SPS):
-      Config_Reg1 |= REG_CONFIG_DR_330SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_330SPS;
       break;
     case(DR_600SPS):
-      Config_Reg1 |= REG_CONFIG_DR_600SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_600SPS;
       break;
     case(DR_1000SPS):
-      Config_Reg1 |= REG_CONFIG_DR_1000SPS; 
+      Config_Reg1 |= REG_CONFIG_DR_1000SPS;
       break;
   }
 
@@ -186,31 +204,31 @@ void Protocentral_ADS1220::set_pga_gain(int pgagain)
   switch(pgagain)
   {
     case(PGA_GAIN_1):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_1 ; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_1 ;
       break;
     case(PGA_GAIN_2):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_2; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_2;
       break;
     case(PGA_GAIN_4):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_4; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_4;
       break;
     case(PGA_GAIN_8):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_8; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_8;
       break;
     case(PGA_GAIN_16):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_16; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_16;
       break;
     case(PGA_GAIN_32):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_32; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_32;
       break;
     case(PGA_GAIN_64):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_64; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_64;
       break;
     case(PGA_GAIN_128):
-      Config_Reg0 |= REG_CONFIG_PGA_GAIN_128; 
+      Config_Reg0 |= REG_CONFIG_PGA_GAIN_128;
       break;
   }
-  
+
   writeRegister(CONFIG_REG0_ADDRESS,Config_Reg0);
 }
 
@@ -223,7 +241,7 @@ uint8_t * Protocentral_ADS1220::get_config_reg()
   Config_Reg2 = readRegister(CONFIG_REG2_ADDRESS);
   Config_Reg3 = readRegister(CONFIG_REG3_ADDRESS);
 
-  config_Buff[0] = Config_Reg0 ; 
+  config_Buff[0] = Config_Reg0 ;
   config_Buff[1] = Config_Reg1 ;
   config_Buff[2] = Config_Reg2 ;
   config_Buff[3] = Config_Reg3 ;
@@ -241,13 +259,13 @@ uint8_t * Protocentral_ADS1220::Read_Data()
   	digitalWrite(ADS1220_CS_PIN,LOW);                         //Take CS low
   	delayMicroseconds(100);
   	for (int i = 0; i < 3; i++)
-  	{ 
+  	{
   	  SPI_Buff[i] = SPI.transfer(SPI_MASTER_DUMMY);
   	}
   	delayMicroseconds(100);
   	digitalWrite(ADS1220_CS_PIN,HIGH);                  //  Clear CS to high
   	NewDataAvailable = true;
   }
-  	
+
   return SPI_Buff;
 }
