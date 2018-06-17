@@ -5,7 +5,7 @@
 //    Author: Ashwin Whitchurch
 //    Copyright (c) 2018 ProtoCentral
 //
-//    This example gives differential voltage across the AN0 and AN1 pins in mVolts
+//    This example sequentially reads all 4 channels in continuous conversion mode
 //
 //    Arduino connections:
 //
@@ -37,10 +37,10 @@
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
 
-#define PGA 1                 // Programmable Gain = 1
-#define VREF 2.048            // Internal reference of 2.048V
-#define VFSR VREF/PGA
-#define FSR (((long int)1<<23)-1)
+#define PGA          1                 // Programmable Gain = 1
+#define VREF         2.048            // Internal reference of 2.048V
+#define VFSR         VREF/PGA
+#define FULL_SCALE   (((long int)1<<23)-1)
 
 #define ADS1220_CS_PIN    7
 #define ADS1220_DRDY_PIN  6
@@ -55,16 +55,16 @@ void setup()
     pc_ads1220.begin(ADS1220_CS_PIN,ADS1220_DRDY_PIN);
 
     pc_ads1220.set_data_rate(DR_330SPS);
-    pc_ads1220.set_pga_gain(PGA_GAIN_32);
+    pc_ads1220.set_pga_gain(PGA_GAIN_1);
     pc_ads1220.select_mux_channels(MUX_AIN0_AIN1);  //Configure for differential measurement between AIN0 and AIN1
 
-    pc_ads1220.Start_Conv();  //Start continuous conversion mode
+    pc_ads1220.set_conv_mode_single_shot(); //Set Single shot mode
 }
 
 void loop()
 {
-    adc_data=pc_ads1220.Read_WaitForData();
-
+    pc_ads1220.select_mux_channels(MUX_AIN0_AIN1);  //Configure for differential measurement between AIN0 and AIN1
+    adc_data=pc_ads1220.Read_SingleShot_WaitForData();
     float Vout = (float)((adc_data*VFSR*1000)/FSR);     //In  mV
 
     delay(300);
