@@ -23,6 +23,8 @@
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
 
+//#define BOARD_SENSYTHING ST_1_3
+
 Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 {
     NewDataAvailable = false;
@@ -59,7 +61,13 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     m_drdy_pin=drdy_pin;
     m_cs_pin=cs_pin;
 
+
+#if defined(BOARD_SENSYTHING)
+    SPI.begin(18, 35, 23, 19);
+#else
     SPI.begin();
+#endif
+
     //SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE1);
 
@@ -137,34 +145,33 @@ void Protocentral_ADS1220::Single_shot_mode_ON(void)
 
 void Protocentral_ADS1220::set_data_rate(int datarate)
 {
-  Config_Reg1 &= ~REG_CONFIG_DR_MASK;
+    Config_Reg1 &= ~REG_CONFIG_DR_MASK;
 
-  switch(datarate)
-  {
-    case(DR_20SPS):
-      Config_Reg1 |= REG_CONFIG_DR_20SPS;
-      break;
-    case(DR_45SPS):
-      Config_Reg1 |= REG_CONFIG_DR_45SPS;
-      break;
-    case(DR_90SPS):
-      Config_Reg1 |= REG_CONFIG_DR_90SPS;
-      break;
-    case(DR_175SPS):
-      Config_Reg1 |= REG_CONFIG_DR_175SPS;
-      break;
-    case(DR_330SPS):
-      Config_Reg1 |= REG_CONFIG_DR_330SPS;
-      break;
-    case(DR_600SPS):
-      Config_Reg1 |= REG_CONFIG_DR_600SPS;
-      break;
-    case(DR_1000SPS):
-      Config_Reg1 |= REG_CONFIG_DR_1000SPS;
-      break;
-  }
-
-  writeRegister(CONFIG_REG1_ADDRESS,Config_Reg1);
+    switch(datarate)
+    {
+        case(DR_20SPS):
+            Config_Reg1 |= REG_CONFIG_DR_20SPS;
+            break;
+        case(DR_45SPS):
+            Config_Reg1 |= REG_CONFIG_DR_45SPS;
+            break;
+        case(DR_90SPS):
+            Config_Reg1 |= REG_CONFIG_DR_90SPS;
+            break;
+        case(DR_175SPS):
+            Config_Reg1 |= REG_CONFIG_DR_175SPS;
+            break;
+        case(DR_330SPS):
+            Config_Reg1 |= REG_CONFIG_DR_330SPS;
+            break;
+        case(DR_600SPS):
+            Config_Reg1 |= REG_CONFIG_DR_600SPS;
+            break;
+        case(DR_1000SPS):
+            Config_Reg1 |= REG_CONFIG_DR_1000SPS;
+            break;
+    }
+    writeRegister(CONFIG_REG1_ADDRESS,Config_Reg1);
 }
 
 
@@ -220,7 +227,6 @@ uint8_t * Protocentral_ADS1220::get_config_reg()
     return config_Buff;
 }
 
-
 uint8_t * Protocentral_ADS1220::Read_Data()
 {
     static byte SPI_Buff[3];
@@ -265,15 +271,6 @@ int32_t Protocentral_ADS1220::Read_WaitForData()
 
         bit24= ( bit24 << 8 );
         mResult32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
-
-        /*
-        bit24 = MSB;
-        bit24 = (bit24 << 8) | data;
-        bit24 = (bit24 << 8) | LSB;                                 // Converting 3 bytes to a 24 bit int
-
-        bit24= ( bit24 << 8 );
-        bit32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
-        */
     }
 
     return mResult32;

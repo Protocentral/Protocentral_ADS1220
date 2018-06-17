@@ -44,11 +44,9 @@
 #define ADS1220_CS_PIN    7
 #define ADS1220_DRDY_PIN  6
 
-//volatile char SPI_RX_Buff[3];
-volatile byte *SPI_RX_Buff_Ptr;
+#define BOARD_SENSYTHING  ST_1_3
 
 Protocentral_ADS1220 pc_ads1220;
-
 int32_t adc_data;
 
 void setup()
@@ -65,38 +63,14 @@ void setup()
 
 void loop()
 {
-    long int bit32;
-    long int bit24;
-    byte *config_reg;
-
-    //if((digitalRead(ADS1220_DRDY_PIN)) == LOW)             //        Wait for DRDY to transition low
-    {
-        //SPI_RX_Buff_Ptr = pc_ads1220.Read_Data();
-    }
     adc_data=pc_ads1220.Read_WaitForData();
 
-    ////if(pc_ads1220.NewDataAvailable = true)
-    //{
-    //    pc_ads1220.NewDataAvailable = false;
-/*
-        MSB = SPI_RX_Buff_Ptr[0];
-        data = SPI_RX_Buff_Ptr[1];
-        LSB = SPI_RX_Buff_Ptr[2];
+    float Vout = (float)((adc_data*VFSR*1000)/FSR);     //In  mV
 
-        bit24 = MSB;
-        bit24 = (bit24 << 8) | data;
-        bit24 = (bit24 << 8) | LSB;                                 // Converting 3 bytes to a 24 bit int
+    //delay(300);
 
-        bit24= ( bit24 << 8 );
-        bit32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
-*/
-        float Vout = (float)((adc_data*VFSR*1000)/FSR);     //In  mV
-
-        delay(300);
-
-        Serial.print("Vout in mV : ");
-        Serial.print(Vout);
-        Serial.print("  32bit HEX : ");
-        Serial.println(bit32,HEX);
-    //}
+    Serial.print("Vout in mV : ");
+    Serial.print(Vout);
+    Serial.print("  32bit HEX : ");
+    Serial.println(adc_data,HEX);
 }
