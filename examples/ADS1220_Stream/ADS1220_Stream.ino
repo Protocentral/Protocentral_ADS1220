@@ -41,16 +41,15 @@
 #define VFSR VREF/PGA
 #define FSR (((long int)1<<23)-1)
 
-#define ADS1220_CS_PIN 7
-#define ADS1220_DRDY_PIN 6
+#define ADS1220_CS_PIN    7
+#define ADS1220_DRDY_PIN  6
 
-volatile byte MSB;
-volatile byte data;
-volatile byte LSB;
 //volatile char SPI_RX_Buff[3];
 volatile byte *SPI_RX_Buff_Ptr;
 
 Protocentral_ADS1220 pc_ads1220;
+
+int32_t adc_data;
 
 void setup()
 {
@@ -72,13 +71,14 @@ void loop()
 
     //if((digitalRead(ADS1220_DRDY_PIN)) == LOW)             //        Wait for DRDY to transition low
     {
-        SPI_RX_Buff_Ptr = pc_ads1220.Read_Data();
+        //SPI_RX_Buff_Ptr = pc_ads1220.Read_Data();
     }
+    adc_data=pc_ads1220.Read_WaitForData();
 
-    if(pc_ads1220.NewDataAvailable = true)
-    {
-        pc_ads1220.NewDataAvailable = false;
-
+    ////if(pc_ads1220.NewDataAvailable = true)
+    //{
+    //    pc_ads1220.NewDataAvailable = false;
+/*
         MSB = SPI_RX_Buff_Ptr[0];
         data = SPI_RX_Buff_Ptr[1];
         LSB = SPI_RX_Buff_Ptr[2];
@@ -89,8 +89,8 @@ void loop()
 
         bit24= ( bit24 << 8 );
         bit32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
-
-        float Vout = (float)((bit32*VFSR*1000)/FSR);     //In  mV
+*/
+        float Vout = (float)((adc_data*VFSR*1000)/FSR);     //In  mV
 
         delay(300);
 
@@ -98,5 +98,5 @@ void loop()
         Serial.print(Vout);
         Serial.print("  32bit HEX : ");
         Serial.println(bit32,HEX);
-    }
+    //}
 }

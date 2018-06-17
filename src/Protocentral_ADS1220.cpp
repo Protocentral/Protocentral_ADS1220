@@ -240,3 +240,41 @@ uint8_t * Protocentral_ADS1220::Read_Data()
 
     return SPI_Buff;
 }
+
+int32_t Protocentral_ADS1220::Read_WaitForData()
+{
+    static byte SPI_Buff[3];
+    int32_t mResult32=0;
+    long int bit24;
+
+    if((digitalRead(m_drdy_pin)) == LOW)             //        Wait for DRDY to transition low
+    {
+        digitalWrite(m_cs_pin,LOW);                         //Take CS low
+        delayMicroseconds(100);
+        for (int i = 0; i < 3; i++)
+        {
+          SPI_Buff[i] = SPI.transfer(SPI_MASTER_DUMMY);
+        }
+        delayMicroseconds(100);
+        digitalWrite(m_cs_pin,HIGH);                  //  Clear CS to high
+        NewDataAvailable = true;
+
+        bit24 = SPI_Buff[0];
+        bit24 = (bit24 << 8) | SPI_Buff[1];
+        bit24 = (bit24 << 8) | SPI_Buff[2];                                 // Converting 3 bytes to a 24 bit int
+
+        bit24= ( bit24 << 8 );
+        mResult32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
+
+        /*
+        bit24 = MSB;
+        bit24 = (bit24 << 8) | data;
+        bit24 = (bit24 << 8) | LSB;                                 // Converting 3 bytes to a 24 bit int
+
+        bit24= ( bit24 << 8 );
+        bit32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
+        */
+    }
+
+    return mResult32;
+}
