@@ -56,7 +56,6 @@ void setup()
 
     pc_ads1220.set_data_rate(DR_330SPS);
     pc_ads1220.set_pga_gain(PGA_GAIN_1);
-    pc_ads1220.select_mux_channels(MUX_AIN0_AIN1);  //Configure for differential measurement between AIN0 and AIN1
 
     pc_ads1220.set_conv_mode_single_shot(); //Set Single shot mode
 }
