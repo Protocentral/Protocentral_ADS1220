@@ -23,7 +23,7 @@
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
 
-#define BOARD_SENSYTHING ST_1_3
+// 1o#define BOARD_SENSYTHING ST_1_3
 
 Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 {
