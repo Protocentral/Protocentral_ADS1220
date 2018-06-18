@@ -72,6 +72,11 @@
 #define MUX_AIN2_AVSS   0xA0
 #define MUX_AIN3_AVSS   0xB0
 
+#define MUX_SE_CH0      0x80
+#define MUX_SE_CH1      0x90
+#define MUX_SE_CH2      0xA0
+#define MUX_SE_CH3      0xB0
+
 #define _BV(bit) (1<<(bit))
 
 class Protocentral_ADS1220
@@ -102,9 +107,12 @@ class Protocentral_ADS1220
 
       void PGA_OFF(void);
       void PGA_ON(void);
-      void Continuous_conversion_mode_ON(void);
+      void set_conv_mode_continuous(void);
       void Single_shot_mode_ON(void);
       void set_data_rate(int datarate);
       void set_pga_gain(int pgagain);
       void select_mux_channels(int channels_conf);
+      void set_conv_mode_single_shot(void);
+      int32_t Read_SingleShot_WaitForData(void);
+      int32_t Read_SingleShot_SingleEnded_WaitForData(int channel_no);
 };

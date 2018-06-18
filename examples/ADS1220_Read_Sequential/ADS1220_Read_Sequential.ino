@@ -63,14 +63,28 @@ void setup()
 
 void loop()
 {
-    pc_ads1220.select_mux_channels(MUX_AIN0_AIN1);  //Configure for differential measurement between AIN0 and AIN1
-    adc_data=pc_ads1220.Read_SingleShot_WaitForData();
-    float Vout = (float)((adc_data*VFSR*1000)/FSR);     //In  mV
+    adc_data=pc_ads1220.Read_SingleShot_SingleEnded_WaitForData(MUX_SE_CH0);
+    Serial.print("\n\nCh1 (mV): ");
+    Serial.print(convertToMilliV(adc_data));
+    delay(100);
 
-    delay(300);
+    adc_data=pc_ads1220.Read_SingleShot_SingleEnded_WaitForData(MUX_SE_CH1);
+    Serial.print("\nCh2 (mV): ");
+    Serial.print(convertToMilliV(adc_data));
+    delay(100);
 
-    Serial.print("Vout in mV : ");
-    Serial.print(Vout);
-    Serial.print("  32bit HEX : ");
-    Serial.println(adc_data,HEX);
+    adc_data=pc_ads1220.Read_SingleShot_SingleEnded_WaitForData(MUX_SE_CH2);
+    Serial.print("\nCh3 (mV): ");
+    Serial.print(convertToMilliV(adc_data));
+    delay(100);
+
+    adc_data=pc_ads1220.Read_SingleShot_SingleEnded_WaitForData(MUX_SE_CH3);
+    Serial.print("\nCh4 (mV): ");
+    Serial.print(convertToMilliV(adc_data));
+    delay(100);
+}
+
+float convertToMilliV(int32_t i32data)
+{
+    return (float)((i32data*VFSR*1000)/FULL_SCALE);
 }
