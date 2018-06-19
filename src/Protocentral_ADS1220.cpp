@@ -23,7 +23,7 @@
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
 
-// 1o#define BOARD_SENSYTHING ST_1_3
+//#define BOARD_SENSYTHING ST_1_3
 
 Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 {
@@ -59,17 +59,22 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     m_drdy_pin=drdy_pin;
     m_cs_pin=cs_pin;
 
+    pinMode(m_cs_pin, OUTPUT);
+    pinMode(m_drdy_pin, INPUT);
+
 #if defined(BOARD_SENSYTHING)
     SPI.begin(18, 35, 23, 19);
 #else
     SPI.begin();
 #endif
-
+    SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE1);
 
     delay(100);
     ads1220_Reset();
     delay(100);
+
+    digitalWrite(m_cs_pin,LOW);
 
     m_config_reg0 = 0x00;   //Default settings: AINP=AIN0, AINN=AIN1, Gain 1, PGA enabled
     m_config_reg1 = 0x04;   //Default settings: DR=20 SPS, Mode=Normal, Conv mode=continuous, Temp Sensor disabled, Current Source off
@@ -83,7 +88,23 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
 
     delay(100);
 
-    Start_Conv();
+    Config_Reg0 = readRegister(CONFIG_REG0_ADDRESS);
+    Config_Reg1 = readRegister(CONFIG_REG1_ADDRESS);
+    Config_Reg2 = readRegister(CONFIG_REG2_ADDRESS);
+    Config_Reg3 = readRegister(CONFIG_REG3_ADDRESS);
+
+    Serial.println("Config_Reg : ");
+    Serial.println(Config_Reg0,HEX);
+    Serial.println(Config_Reg1,HEX);
+    Serial.println(Config_Reg2,HEX);
+    Serial.println(Config_Reg3,HEX);
+    Serial.println(" ");
+
+    digitalWrite(m_cs_pin,HIGH);
+
+    delay(100);
+
+    //Start_Conv();
     delay(100);
 }
 
@@ -228,14 +249,17 @@ int32_t Protocentral_ADS1220::Read_SingleShot_WaitForData(void)
     return mResult32;
 }
 
-int32_t Protocentral_ADS1220::Read_SingleShot_SingleEnded_WaitForData(int channel_no)
+int32_t Protocentral_ADS1220::Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no)
 {
     static byte SPI_Buff[3];
     int32_t mResult32=0;
     long int bit24;
 
     select_mux_channels(channel_no);
+    delay(100);
+
     Start_Conv();
+    delay(100);
 
     if((digitalRead(m_drdy_pin)) == LOW)             //        Wait for DRDY to transition low
     {

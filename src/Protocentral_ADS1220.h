@@ -81,14 +81,19 @@
 
 class Protocentral_ADS1220
 {
-  protected:
+private:
       uint8_t m_config_reg0;
       uint8_t m_config_reg1;
       uint8_t m_config_reg2;
       uint8_t m_config_reg3;
 
-      uint8_t m_drdy_pin;
-      uint8_t m_cs_pin;
+      uint8_t Config_Reg0;
+      uint8_t Config_Reg1;
+      uint8_t Config_Reg2;
+      uint8_t Config_Reg3;
+
+      uint8_t m_drdy_pin=6;
+      uint8_t m_cs_pin=7;
   public:
       uint8_t NewDataAvailable;
 
@@ -114,5 +119,5 @@ class Protocentral_ADS1220
       void select_mux_channels(int channels_conf);
       void set_conv_mode_single_shot(void);
       int32_t Read_SingleShot_WaitForData(void);
-      int32_t Read_SingleShot_SingleEnded_WaitForData(int channel_no);
+      int32_t Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no);
 };
