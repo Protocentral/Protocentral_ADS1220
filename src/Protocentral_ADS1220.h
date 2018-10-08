@@ -23,7 +23,7 @@
 
 #include "Arduino.h"
 
-#include "SPI.h"
+#include <SPI.h>
 
 //ADS1220 SPI commands
 #define SPI_MASTER_DUMMY    0xFF
@@ -92,6 +92,8 @@ private:
       uint8_t Config_Reg2;
       uint8_t Config_Reg3;
 
+      uint8_t DataReg[3];
+
       uint8_t m_drdy_pin=6;
       uint8_t m_cs_pin=7;
   public:
@@ -99,6 +101,9 @@ private:
 
       Protocentral_ADS1220();
       void begin(uint8_t cs_pin, uint8_t drdy_pin);
+
+      void PrintRegisterValues();
+
       void Start_Conv(void);
       void ads1220_Reset(void);
 
@@ -107,6 +112,9 @@ private:
       uint8_t readRegister(uint8_t address);
       uint8_t * Read_Data(void);
       int32_t Read_WaitForData();
+
+      void WaitForData();
+      int32_t DataToInt();
 
       uint8_t * get_config_reg(void);
 
@@ -120,4 +128,7 @@ private:
       void set_conv_mode_single_shot(void);
       int32_t Read_SingleShot_WaitForData(void);
       int32_t Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no);
+
+      void internal_reference();
+      void external_reference();
 };
