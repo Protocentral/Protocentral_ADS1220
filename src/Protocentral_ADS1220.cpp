@@ -253,7 +253,7 @@ int32_t Protocentral_ADS1220::Read_SingleShot_SingleEnded_WaitForData(uint8_t ch
     return Read_SingleShot_WaitForData();
 }
 
-#define VREF_MASK ((1 << 6) & (1<<7))
+#define VREF_MASK ((1 << 6) | (1<<7))
 #define VREF_INT (0 << 6)
 #define VREF_EXT (1 << 6)
 
