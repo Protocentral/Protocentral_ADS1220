@@ -225,7 +225,7 @@ int32_t Protocentral_ADS1220::DataToInt(){
 int32_t Protocentral_ADS1220::Read_WaitForData()
 {
     if(!WaitForData(60)){
-        return std::limits<int32_t>::min();
+        return std::numeric_limits<int32_t>::min();
     }
     Read_Data();
     return DataToInt();
