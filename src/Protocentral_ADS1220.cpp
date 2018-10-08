@@ -26,6 +26,14 @@
 
 //#define BOARD_SENSYTHING ST_1_3
 
+
+#ifdef _BV
+#undef _BV
+#endif
+
+#define _BV(bit) (1<<(bit))
+
+
 Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 {
 
@@ -207,6 +215,8 @@ uint8_t * Protocentral_ADS1220::Read_Data(void){
     }
     delayMicroseconds(1);
     digitalWrite(m_cs_pin, HIGH);                  //  Clear CS to high
+
+    return DataReg;
 }
 
 int32_t Protocentral_ADS1220::DataToInt(){
