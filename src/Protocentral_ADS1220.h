@@ -113,7 +113,7 @@ private:
       uint8_t * Read_Data(void);
       int32_t Read_WaitForData();
 
-      void WaitForData();
+      bool WaitForData(unsigned int timeout_ms);
       int32_t DataToInt();
 
       uint8_t * get_config_reg(void);

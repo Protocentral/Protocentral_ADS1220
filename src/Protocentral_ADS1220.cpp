@@ -22,6 +22,7 @@
 #include <Arduino.h>
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
+#include <limits>
 
 //#define BOARD_SENSYTHING ST_1_3
 
@@ -75,7 +76,9 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     delayMicroseconds(50);
     
     // The device pulls nDRDY low after it is initialized
-    WaitForData();
+    if(!WaitForData(1)){
+        // TODO: Handle the timeout
+    }
 
     m_config_reg0 = 0x00;   //Default settings: AINP=AIN0, AINN=AIN1, Gain 1, PGA enabled
     m_config_reg1 = 0x04;   //Default settings: DR=20 SPS, Mode=Normal, Conv mode=continuous, Temp Sensor disabled, Current Source off
@@ -183,10 +186,16 @@ uint8_t * Protocentral_ADS1220::get_config_reg()
     return config_Buff;
 }
 
-void Protocentral_ADS1220::WaitForData(){
+bool Protocentral_ADS1220::WaitForData(unsigned int timeout_ms){
     while(digitalRead(m_drdy_pin)){
-        // idle
+        if(timeout_ms){
+            delay(1);
+            --timeout_ms;
+        } else {
+            return false;
+        }
     }
+    return true;
 }
 
 uint8_t * Protocentral_ADS1220::Read_Data(void){
@@ -215,7 +224,9 @@ int32_t Protocentral_ADS1220::DataToInt(){
 
 int32_t Protocentral_ADS1220::Read_WaitForData()
 {
-    WaitForData();
+    if(!WaitForData(60)){
+        return std::limits<int32_t>::min();
+    }
     Read_Data();
     return DataToInt();
 }
