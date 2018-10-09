@@ -26,6 +26,7 @@
 
 //#define BOARD_SENSYTHING ST_1_3
 
+SPISettings SPI_SETTINGS(2000000, MSBFIRST, SPI_MODE1); 
 
 #ifdef _BV
 #undef _BV
@@ -41,24 +42,28 @@ Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 
 void Protocentral_ADS1220::writeRegister(uint8_t address, uint8_t value)
 {
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin,LOW);
     delayMicroseconds(1);
     SPI.transfer(WREG|(address<<2));
     SPI.transfer(value);
     delayMicroseconds(1);
     digitalWrite(m_cs_pin,HIGH);
+    SPI.endTransaction();
 }
 
 uint8_t Protocentral_ADS1220::readRegister(uint8_t address)
 {
     uint8_t data;
 
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin,LOW);
     delayMicroseconds(1);
     SPI.transfer(RREG|(address<<2));
     data = SPI.transfer(SPI_MASTER_DUMMY);
     delayMicroseconds(1);
     digitalWrite(m_cs_pin,HIGH);
+    SPI.endTransaction();
 
     return data;
 }
@@ -75,10 +80,10 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     SPI.begin(18, 35, 23, 19);
 #else
     SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV2);
+    //SPI.setClockDivider(SPI_CLOCK_DIV2);
 #endif
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE1);
+    //SPI.setBitOrder(MSBFIRST);
+    //SPI.setDataMode(SPI_MODE3);
 
     ads1220_Reset();
     delayMicroseconds(50);
@@ -115,11 +120,13 @@ void Protocentral_ADS1220::PrintRegisterValues(){
 
 void Protocentral_ADS1220::SPI_Command(unsigned char data_in)
 {
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin, LOW);
     delayMicroseconds(1);
     SPI.transfer(data_in);
     delayMicroseconds(1);
     digitalWrite(m_cs_pin, HIGH);
+    SPI.endTransaction();
 }
 
 void Protocentral_ADS1220::ads1220_Reset()
@@ -207,6 +214,7 @@ bool Protocentral_ADS1220::WaitForData(unsigned int timeout_ms){
 }
 
 uint8_t * Protocentral_ADS1220::Read_Data(void){
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin, LOW);                         //Take CS low
     delayMicroseconds(1);
     for (int i = 0; i < 3; i++)
@@ -215,6 +223,7 @@ uint8_t * Protocentral_ADS1220::Read_Data(void){
     }
     delayMicroseconds(1);
     digitalWrite(m_cs_pin, HIGH);                  //  Clear CS to high
+    SPI.endTransaction();
 
     return DataReg;
 }
