@@ -120,4 +120,6 @@ private:
       void set_conv_mode_single_shot(void);
       int32_t Read_SingleShot_WaitForData(void);
       int32_t Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no);
+      int32_t Read_Data_Samples();
+
 };
