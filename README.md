@@ -26,7 +26,7 @@ We also provide the Arduino libraries for interfacing this chip with your Arduin
 
 |ADS1220 Pin | Pin Function         |Arduino Uno Pin Connection|
 |-----------------|:--------------------:|-----------------:|
-| DRDY            | Data ready Output pin|  D6              |             
+| DRDY            | Data ready Output pin|  D2              |             
 | MISO            | Slave Out            |  D12             |
 | MOSI            | Slave In             |  D11             |
 | SCLK            | Serial Clock         |  D13             |
