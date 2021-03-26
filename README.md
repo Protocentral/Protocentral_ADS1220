@@ -42,7 +42,7 @@ We also provide the Arduino libraries for interfacing this chip with your Arduin
 License Information
 ===================
 
-![ADS1220 Breakout](docs/images/license_mark.svg)
+![License](license_mark.svg)
 
 This product is open source! Both, our hardware and software are open source and licensed under the following licenses:
 
