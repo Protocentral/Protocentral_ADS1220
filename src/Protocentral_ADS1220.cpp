@@ -131,37 +131,7 @@ void Protocentral_ADS1220::Start_Conv()
     SPI_Command(START);
 }
 
-void Protocentral_ADS1220::PGA_ON(void)
-{
-    m_config_reg0 &= ~_BV(0);
-    writeRegister(CONFIG_REG0_ADDRESS,m_config_reg0);
-}
-
-void Protocentral_ADS1220::PGA_OFF(void)
-{
-    m_config_reg0 |= _BV(0);
-    writeRegister(CONFIG_REG0_ADDRESS,m_config_reg0);
-}
-
-void Protocentral_ADS1220::set_conv_mode_continuous(void)
-{
-    m_config_reg1 |= _BV(2);
-    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
-}
-
-void Protocentral_ADS1220::set_conv_mode_single_shot(void)
-{
-    m_config_reg1 &= ~_BV(2);
-    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
-}
-
-void Protocentral_ADS1220::set_data_rate(int datarate)
-{
-    m_config_reg1 &= ~REG_CONFIG1_DR_MASK;
-    m_config_reg1 |= datarate;
-    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
-}
-
+// control register 0
 void Protocentral_ADS1220::select_mux_channels(int channels_conf)
 {
     m_config_reg0 &= ~REG_CONFIG0_MUX_MASK;
@@ -175,6 +145,131 @@ void Protocentral_ADS1220::set_pga_gain(int pgagain)
     m_config_reg0 |= pgagain ;
     writeRegister(CONFIG_REG0_ADDRESS,m_config_reg0);
 }
+
+void Protocentral_ADS1220::PGA_ON(void)
+{
+    m_config_reg0 &= ~_BV(0);
+    writeRegister(CONFIG_REG0_ADDRESS,m_config_reg0);
+}
+
+void Protocentral_ADS1220::PGA_OFF(void)
+{
+    m_config_reg0 |= _BV(0);
+    writeRegister(CONFIG_REG0_ADDRESS,m_config_reg0);
+}
+
+// control register 1
+void Protocentral_ADS1220::set_data_rate(int datarate)
+{
+    m_config_reg1 &= ~REG_CONFIG1_DR_MASK;
+    m_config_reg1 |= datarate;
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::set_OperationMode(int OPmode)
+{
+    m_config_reg1 &= ~REG_CONFIG1_MODE_MASK;
+    m_config_reg1 |= OPmode;
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::set_conv_mode_single_shot(void)
+{
+    m_config_reg1 &= ~_BV(2);
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::set_conv_mode_continuous(void)
+{
+    m_config_reg1 |= _BV(2);
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::TemperatureSensorMode_disable(void)
+{
+    m_config_reg1 &= ~_BV(1);
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::TemperatureSensorMode_enable(void)
+{
+    m_config_reg1 |= _BV(1);
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::CurrentSources_OFF(void)
+{
+    m_config_reg1 &= ~_BV(0);
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+void Protocentral_ADS1220::CurrentSources_ON(void)
+{
+    m_config_reg1 |= _BV(0);
+    writeRegister(CONFIG_REG1_ADDRESS,m_config_reg1);
+}
+
+// control register 2
+void Protocentral_ADS1220::set_VREF(int vref)
+{
+    m_config_reg2 &= ~REG_CONFIG2_VREF_MASK;
+    m_config_reg2 |= vref;
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
+}
+
+void Protocentral_ADS1220::set_FIR_Filter(int filter)
+{
+    m_config_reg2 &= ~REG_CONFIG2_FIR_MASK;
+    m_config_reg2 |= filter;
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
+}
+
+void Protocentral_ADS1220::LowSideSwitch_OPEN(void)
+{
+    m_config_reg2 &= ~_BV(3);
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
+}
+
+void Protocentral_ADS1220::LowSideSwitch_CLOSED(void)
+{
+    m_config_reg2 |= _BV(3);
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
+}
+
+void Protocentral_ADS1220::set_IDAC_Current(int IDACcurrent)
+{
+    m_config_reg2 &= ~REG_CONFIG2_IDACcurrent_MASK;
+    m_config_reg2 |= IDACcurrent;
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
+}
+
+// control register 3
+void Protocentral_ADS1220::set_IDAC1_Route(int IDAC1routing)
+{
+    m_config_reg3 &= ~REG_CONFIG3_IDAC1routing_MASK;
+    m_config_reg3 |= IDAC1routing;
+    writeRegister(CONFIG_REG3_ADDRESS,m_config_reg3);
+}
+
+void Protocentral_ADS1220::set_IDAC2_Route(int IDAC2routing)
+{
+    m_config_reg3 &= ~REG_CONFIG3_IDAC2routing_MASK;
+    m_config_reg3 |= IDAC2routing;
+    writeRegister(CONFIG_REG3_ADDRESS,m_config_reg3);
+}
+
+ void Protocentral_ADS1220::DRDYmode_default(void)
+ {
+     m_config_reg3 &= ~_BV(3);
+     writeRegister(CONFIG_REG3_ADDRESS,m_config_reg3);
+ }
+
+ void Protocentral_ADS1220::DRDYmode_DOUT(void)
+ {
+     m_config_reg3 |= _BV(3);
+     writeRegister(CONFIG_REG3_ADDRESS,m_config_reg3);
+ }
+// end control register
 
 uint8_t * Protocentral_ADS1220::get_config_reg()
 {
