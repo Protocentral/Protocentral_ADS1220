@@ -38,9 +38,57 @@
 #define CONFIG_REG2_ADDRESS 0x02
 #define CONFIG_REG3_ADDRESS 0x03
 
+#define REG_CONFIG3_IDAC1routing_MASK    0xE0
+#define REG_CONFIG3_IDAC2routing_MASK    0x1C
+#define REG_CONFIG2_VREF_MASK            0xC0
+#define REG_CONFIG2_FIR_MASK             0x30
+#define REG_CONFIG2_IDACcurrent_MASK     0x07
+#define REG_CONFIG1_MODE_MASK            0x18
 #define REG_CONFIG1_DR_MASK       0xE0
 #define REG_CONFIG0_PGA_GAIN_MASK 0x0E
 #define REG_CONFIG0_MUX_MASK      0xF0
+
+#define IDAC1_disable     0x00  
+#define IDAC1_AIN0        0x20  
+#define IDAC1_AIN1        0x40  
+#define IDAC1_AIN2        0x60  
+#define IDAC1_AIN3        0x80  
+#define IDAC1_REFP0       0xA0  
+#define IDAC1_REFN0       0xC0  
+#define IDAC1_reserved    0xE0  
+
+#define IDAC2_disable     0x00  
+#define IDAC2_AIN0        0x04  
+#define IDAC2_AIN1        0x08  
+#define IDAC2_AIN2        0x0C  
+#define IDAC2_AIN3        0x10  
+#define IDAC2_REFP0       0x14  
+#define IDAC2_REFN0       0x18  
+#define IDAC2_reserved    0x1C  
+
+#define IDAC_OFF     0x00  
+#define IDAC_10      0x01  
+#define IDAC_50      0x02  
+#define IDAC_100     0x03  
+#define IDAC_250     0x04  
+#define IDAC_500     0x05  
+#define IDAC_1000    0x06  
+#define IDAC_1500    0x07  
+
+#define FIR_OFF      0x00  
+#define FIR_5060     0x10  
+#define FIR_50Hz     0x20  
+#define FIR_60Hz     0x30  
+
+#define VREF_2048       0x00  
+#define VREF_REFP0      0x40  
+#define VREF_AIN0       0x80  
+#define VREF_ANALOG     0xC0  
+
+#define MODE_NORMAL     0x00  
+#define MODE_DUTYCYCLE  0x08  
+#define MODE_TURBO      0x10  
+#define MODE_RESERVED   0x18  
 
 #define DR_20SPS    0x00
 #define DR_45SPS    0x20
@@ -110,14 +158,33 @@ private:
 
       uint8_t * get_config_reg(void);
 
+// control register 0
+      void select_mux_channels(int channels_conf);
+      void set_pga_gain(int pgagain);
       void PGA_OFF(void);
       void PGA_ON(void);
-      void set_conv_mode_continuous(void);
-      void Single_shot_mode_ON(void);
+// control register 1
       void set_data_rate(int datarate);
-      void set_pga_gain(int pgagain);
-      void select_mux_channels(int channels_conf);
+      void set_OperationMode(int OPmode);    
       void set_conv_mode_single_shot(void);
+      void set_conv_mode_continuous(void);
+      void TemperatureSensorMode_enable(void);    
+      void TemperatureSensorMode_disable(void);   
+      void CurrentSources_ON(void);       
+      void CurrentSources_OFF(void);      
+// control register 2
+      void set_VREF(int vref);             
+	void set_FIR_Filter(int filter);     
+      void LowSideSwitch_OPEN(void);       
+      void LowSideSwitch_CLOSED(void);        
+	void set_IDAC_Current(int IDACcurrent);  
+// control register 3
+	void set_IDAC1_Route(int IDAC1routing);   
+	void set_IDAC2_Route(int IDAC2routing);   
+      void DRDYmode_default(void);       
+      void DRDYmode_DOUT(void);          
+// end control register
+      
       int32_t Read_SingleShot_WaitForData(void);
       int32_t Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no);
       int32_t Read_Data_Samples();
