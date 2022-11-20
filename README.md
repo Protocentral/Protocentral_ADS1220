@@ -1,4 +1,5 @@
 # ProtoCentral ADS1220 24-bit ADC Breakout Board
+[![Compile Examples](https://github.com/Protocentral/Protocentral_ADS1220/workflows/Compile%20Examples/badge.svg)](https://github.com/Protocentral/Protocentral_ADS1220/actions?workflow=Compile+Examples)
 
 ![ADS1220 Breakout](docs/images/ads1220_brk_0.jpg)
 
