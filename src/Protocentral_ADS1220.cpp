@@ -22,8 +22,18 @@
 #include <Arduino.h>
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
+#include <limits>
 
 //#define BOARD_SENSYTHING ST_1_3
+
+SPISettings SPI_SETTINGS(2000000, MSBFIRST, SPI_MODE1); 
+
+#ifdef _BV
+#undef _BV
+#endif
+
+#define _BV(bit) (1<<(bit))
+
 
 Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 {
@@ -32,24 +42,28 @@ Protocentral_ADS1220::Protocentral_ADS1220() 								// Constructors
 
 void Protocentral_ADS1220::writeRegister(uint8_t address, uint8_t value)
 {
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin,LOW);
-    delay(5);
+    delayMicroseconds(1);
     SPI.transfer(WREG|(address<<2));
     SPI.transfer(value);
-    delay(5);
+    delayMicroseconds(1);
     digitalWrite(m_cs_pin,HIGH);
+    SPI.endTransaction();
 }
 
 uint8_t Protocentral_ADS1220::readRegister(uint8_t address)
 {
     uint8_t data;
 
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin,LOW);
-    delay(5);
+    delayMicroseconds(1);
     SPI.transfer(RREG|(address<<2));
     data = SPI.transfer(SPI_MASTER_DUMMY);
-    delay(5);
+    delayMicroseconds(1);
     digitalWrite(m_cs_pin,HIGH);
+    SPI.endTransaction();
 
     return data;
 }
@@ -66,15 +80,18 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     SPI.begin(18, 35, 23, 19);
 #else
     SPI.begin();
+    //SPI.setClockDivider(SPI_CLOCK_DIV2);
 #endif
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE1);
+    //SPI.setBitOrder(MSBFIRST);
+    //SPI.setDataMode(SPI_MODE3);
 
-    delay(100);
     ads1220_Reset();
-    delay(100);
-
-    digitalWrite(m_cs_pin,LOW);
+    delayMicroseconds(50);
+    
+    // The device pulls nDRDY low after it is initialized
+    if(!WaitForData(1)){
+        // TODO: Handle the timeout
+    }
 
     m_config_reg0 = 0x00;   //Default settings: AINP=AIN0, AINN=AIN1, Gain 1, PGA enabled
     m_config_reg1 = 0x04;   //Default settings: DR=20 SPS, Mode=Normal, Conv mode=continuous, Temp Sensor disabled, Current Source off
@@ -85,9 +102,9 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     writeRegister( CONFIG_REG1_ADDRESS , m_config_reg1);
     writeRegister( CONFIG_REG2_ADDRESS , m_config_reg2);
     writeRegister( CONFIG_REG3_ADDRESS , m_config_reg3);
+}
 
-    delay(100);
-
+void Protocentral_ADS1220::PrintRegisterValues(){
     Config_Reg0 = readRegister(CONFIG_REG0_ADDRESS);
     Config_Reg1 = readRegister(CONFIG_REG1_ADDRESS);
     Config_Reg2 = readRegister(CONFIG_REG2_ADDRESS);
@@ -99,26 +116,17 @@ void Protocentral_ADS1220::begin(uint8_t cs_pin, uint8_t drdy_pin)
     Serial.println(Config_Reg2,HEX);
     Serial.println(Config_Reg3,HEX);
     Serial.println(" ");
-
-    digitalWrite(m_cs_pin,HIGH);
-
-    delay(100);
-
-    //Start_Conv();
-    delay(100);
 }
 
 void Protocentral_ADS1220::SPI_Command(unsigned char data_in)
 {
+    SPI.beginTransaction(SPI_SETTINGS);
     digitalWrite(m_cs_pin, LOW);
-    delay(2);
-    digitalWrite(m_cs_pin, HIGH);
-    delay(2);
-    digitalWrite(m_cs_pin, LOW);
-    delay(2);
+    delayMicroseconds(1);
     SPI.transfer(data_in);
-    delay(2);
+    delayMicroseconds(1);
     digitalWrite(m_cs_pin, HIGH);
+    SPI.endTransaction();
 }
 
 void Protocentral_ADS1220::ads1220_Reset()
@@ -288,31 +296,53 @@ uint8_t * Protocentral_ADS1220::get_config_reg()
     return config_Buff;
 }
 
+bool Protocentral_ADS1220::WaitForData(unsigned int timeout_ms){
+    while(digitalRead(m_drdy_pin)){
+        if(timeout_ms){
+            delay(1);
+            --timeout_ms;
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
+uint8_t * Protocentral_ADS1220::Read_Data(void){
+    SPI.beginTransaction(SPI_SETTINGS);
+    digitalWrite(m_cs_pin, LOW);                         //Take CS low
+    delayMicroseconds(1);
+    for (int i = 0; i < 3; i++)
+    {
+        DataReg[i] = SPI.transfer(0);
+    }
+    delayMicroseconds(1);
+    digitalWrite(m_cs_pin, HIGH);                  //  Clear CS to high
+    SPI.endTransaction();
+
+    return DataReg;
+}
+
+int32_t Protocentral_ADS1220::DataToInt(){
+    int32_t result = 0;
+    result = DataReg[0];
+    result = (result << 8) | DataReg[1];
+    result = (result << 8) | DataReg[2];
+
+    if (DataReg[0] & (1<<7)) {
+        result |= 0xFF000000;
+    }
+
+    return result;
+}
+
 int32_t Protocentral_ADS1220::Read_WaitForData()
 {
-    static byte SPI_Buff[3];
-    int32_t mResult32=0;
-    long int bit24;
-
-    if((digitalRead(m_drdy_pin)) == LOW)             //        Wait for DRDY to transition low
-    {
-        digitalWrite(m_cs_pin,LOW);                         //Take CS low
-        delayMicroseconds(100);
-        for (int i = 0; i < 3; i++)
-        {
-          SPI_Buff[i] = SPI.transfer(SPI_MASTER_DUMMY);
-        }
-        delayMicroseconds(100);
-        digitalWrite(m_cs_pin,HIGH);                  //  Clear CS to high
-
-        bit24 = SPI_Buff[0];
-        bit24 = (bit24 << 8) | SPI_Buff[1];
-        bit24 = (bit24 << 8) | SPI_Buff[2];                                 // Converting 3 bytes to a 24 bit int
-
-        bit24= ( bit24 << 8 );
-        mResult32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
+    if(!WaitForData(60)){
+        return std::numeric_limits<int32_t>::min();
     }
-    return mResult32;
+    Read_Data();
+    return DataToInt();
 }
 
 int32_t Protocentral_ADS1220::Read_Data_Samples()
@@ -342,62 +372,28 @@ int32_t Protocentral_ADS1220::Read_Data_Samples()
 
 int32_t Protocentral_ADS1220::Read_SingleShot_WaitForData(void)
 {
-    static byte SPI_Buff[3];
-    int32_t mResult32=0;
-    long int bit24;
-
     Start_Conv();
-
-    if((digitalRead(m_drdy_pin)) == LOW)             //        Wait for DRDY to transition low
-    {
-        digitalWrite(m_cs_pin,LOW);                         //Take CS low
-        delayMicroseconds(100);
-        for (int i = 0; i < 3; i++)
-        {
-          SPI_Buff[i] = SPI.transfer(SPI_MASTER_DUMMY);
-        }
-        delayMicroseconds(100);
-        digitalWrite(m_cs_pin,HIGH);                  //  Clear CS to high
-
-        bit24 = SPI_Buff[0];
-        bit24 = (bit24 << 8) | SPI_Buff[1];
-        bit24 = (bit24 << 8) | SPI_Buff[2];                                 // Converting 3 bytes to a 24 bit int
-
-        bit24= ( bit24 << 8 );
-        mResult32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
-    }
-    return mResult32;
+    return Read_WaitForData();
 }
 
 int32_t Protocentral_ADS1220::Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no)
 {
-    static byte SPI_Buff[3];
-    int32_t mResult32=0;
-    long int bit24;
-
     select_mux_channels(channel_no);
-    delay(100);
+    return Read_SingleShot_WaitForData();
+}
 
-    Start_Conv();
-    delay(100);
+#define VREF_MASK ((1 << 6) | (1<<7))
+#define VREF_INT (0 << 6)
+#define VREF_EXT (1 << 6)
 
-    if((digitalRead(m_drdy_pin)) == LOW)             //        Wait for DRDY to transition low
-    {
-        digitalWrite(m_cs_pin,LOW);                         //Take CS low
-        delayMicroseconds(100);
-        for (int i = 0; i < 3; i++)
-        {
-          SPI_Buff[i] = SPI.transfer(SPI_MASTER_DUMMY);
-        }
-        delayMicroseconds(100);
-        digitalWrite(m_cs_pin,HIGH);                  //  Clear CS to high
+void Protocentral_ADS1220::internal_reference(){
+    m_config_reg2 &= ~VREF_MASK;
+    m_config_reg2 |= VREF_INT;
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
+}
 
-        bit24 = SPI_Buff[0];
-        bit24 = (bit24 << 8) | SPI_Buff[1];
-        bit24 = (bit24 << 8) | SPI_Buff[2];                                 // Converting 3 bytes to a 24 bit int
-
-        bit24= ( bit24 << 8 );
-        mResult32 = ( bit24 >> 8 );                      // Converting 24 bit two's complement to 32 bit two's complement
-    }
-    return mResult32;
+void Protocentral_ADS1220::external_reference(){
+    m_config_reg2 &= ~VREF_MASK;
+    m_config_reg2 |= VREF_EXT;
+    writeRegister(CONFIG_REG2_ADDRESS,m_config_reg2);
 }
