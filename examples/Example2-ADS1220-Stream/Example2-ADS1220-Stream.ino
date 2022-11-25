@@ -47,6 +47,7 @@
 
 Protocentral_ADS1220 pc_ads1220;
 int32_t adc_data;
+float ADS1220Temperature;
 volatile bool drdyIntrFlag = false;
 
 void drdyInterruptHndlr(){
@@ -78,6 +79,7 @@ void loop()
 
         adc_data=pc_ads1220.Read_Data_Samples();
         float Vout = (float)((adc_data*VFSR*1000)/FSR);     //In  mV
+        readADS1220Temperature();  
 
         delay(300);
 
@@ -85,6 +87,8 @@ void loop()
         Serial.print(Vout);
         Serial.print("  32bit HEX : ");
         Serial.print(adc_data,HEX);
+        Serial.print("  Temp in °C : ");
+        Serial.println(ADS1220Temperature,5);      
     }
 }
 
