@@ -129,73 +129,78 @@
 
 class Protocentral_ADS1220
 {
-private:
-      uint8_t m_config_reg0;
-      uint8_t m_config_reg1;
-      uint8_t m_config_reg2;
-      uint8_t m_config_reg3;
+      private:
+            uint8_t m_config_reg0;
+            uint8_t m_config_reg1;
+            uint8_t m_config_reg2;
+            uint8_t m_config_reg3;
 
-      uint8_t Config_Reg0;
-      uint8_t Config_Reg1;
-      uint8_t Config_Reg2;
-      uint8_t Config_Reg3;
+            uint8_t Config_Reg0;
+            uint8_t Config_Reg1;
+            uint8_t Config_Reg2;
+            uint8_t Config_Reg3;
 
-      uint8_t DataReg[3];
+            uint8_t DataReg[3];
 
-      uint8_t m_drdy_pin=6;
-      uint8_t m_cs_pin=7;
-  public:
-      uint8_t NewDataAvailable;
+            uint8_t m_drdy_pin=6;
+            uint8_t m_cs_pin=7;
+      public:
+            uint8_t NewDataAvailable;
 
-      Protocentral_ADS1220();
-      void begin(uint8_t cs_pin, uint8_t drdy_pin);
+            Protocentral_ADS1220();
+            void begin(uint8_t cs_pin, uint8_t drdy_pin);
 
-      void PrintRegisterValues();
+            void PrintRegisterValues();
 
-      void Start_Conv(void);
-      void ads1220_Reset(void);
+            void Start_Conv(void);
+            void ads1220_Reset(void);
 
-      void SPI_Command(unsigned char data_in);
-      void writeRegister(uint8_t address, uint8_t value);
-      uint8_t readRegister(uint8_t address);
-      uint8_t * Read_Data(void);
-      int32_t Read_WaitForData();
+            void SPI_Command(unsigned char data_in);
+            void writeRegister(uint8_t address, uint8_t value);
+            uint8_t readRegister(uint8_t address);
+            uint8_t * Read_Data(void);
+            int32_t Read_WaitForData();
 
-      bool WaitForData(unsigned int timeout_ms);
-      int32_t DataToInt();
+            bool WaitForData(unsigned int timeout_ms);
+            int32_t DataToInt();
 
-      uint8_t * get_config_reg(void);
+            uint8_t * get_config_reg(void);
 
-// control register 0
-      void select_mux_channels(int channels_conf);
-      void set_pga_gain(int pgagain);
-      void PGA_OFF(void);
-      void PGA_ON(void);
-// control register 1
-      void set_data_rate(int datarate);
-      void set_OperationMode(int OPmode);    
-      void set_conv_mode_single_shot(void);
-      void set_conv_mode_continuous(void);
-      void TemperatureSensorMode_enable(void);    
-      void TemperatureSensorMode_disable(void);   
-      void CurrentSources_ON(void);       
-      void CurrentSources_OFF(void);      
-// control register 2
-      void set_VREF(int vref);             
-	void set_FIR_Filter(int filter);     
-      void LowSideSwitch_OPEN(void);       
-      void LowSideSwitch_CLOSED(void);        
-	void set_IDAC_Current(int IDACcurrent);  
-// control register 3
-	void set_IDAC1_Route(int IDAC1routing);   
-	void set_IDAC2_Route(int IDAC2routing);   
-      void DRDYmode_default(void);       
-      void DRDYmode_DOUT(void);          
-// end control register
-      
-      int32_t Read_SingleShot_WaitForData(void);
-      int32_t Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no);
+            // control register 0
+            void select_mux_channels(int channels_conf);
+            void set_pga_gain(int pgagain);
+            void PGA_OFF(void);
+            void PGA_ON(void);
+            
+            // control register 1
+            void set_data_rate(int datarate);
+            void set_OperationMode(int OPmode);    
+            void set_conv_mode_single_shot(void);
+            void set_conv_mode_continuous(void);
+            void TemperatureSensorMode_enable(void);    
+            void TemperatureSensorMode_disable(void);   
+            void CurrentSources_ON(void);       
+            void CurrentSources_OFF(void);      
+            
+            // control register 2
+            void set_VREF(int vref);             
+            void set_FIR_Filter(int filter);     
+            void LowSideSwitch_OPEN(void);       
+            void LowSideSwitch_CLOSED(void);        
+            void set_IDAC_Current(int IDACcurrent);  
+            
+            // control register 3
+            void set_IDAC1_Route(int IDAC1routing);   
+            void set_IDAC2_Route(int IDAC2routing);   
+            void DRDYmode_default(void);       
+            void DRDYmode_DOUT(void);          
+            
+            // end control register
+            int32_t Read_SingleShot_WaitForData(void);
+            int32_t Read_SingleShot_SingleEnded_WaitForData(uint8_t channel_no);
 
-      void internal_reference();
-      void external_reference();
+            void internal_reference();
+            void external_reference();
+
+            int32_t Read_Data_Samples();
 };

@@ -22,7 +22,7 @@
 #include <Arduino.h>
 #include "Protocentral_ADS1220.h"
 #include <SPI.h>
-#include <limits>
+#include <limits.h>
 
 //#define BOARD_SENSYTHING ST_1_3
 
@@ -339,7 +339,8 @@ int32_t Protocentral_ADS1220::DataToInt(){
 int32_t Protocentral_ADS1220::Read_WaitForData()
 {
     if(!WaitForData(60)){
-        return std::numeric_limits<int32_t>::min();
+        //return std::numeric_limits<int32_t>::min();
+        return 0;
     }
     Read_Data();
     return DataToInt();
