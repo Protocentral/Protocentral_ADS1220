@@ -1,12 +1,13 @@
 name: Compile Examples
 
+# See: https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows
 on:
-  pull_request:
+  push:
     paths:
       - ".github/workflows/compile-examples.yml"
       - "examples/**"
       - "src/**"
-  push:
+  pull_request:
     paths:
       - ".github/workflows/compile-examples.yml"
       - "examples/**"
@@ -14,12 +15,10 @@ on:
 
 jobs:
   build:
+    name: ${{ matrix.board.fqbn }}
     runs-on: ubuntu-latest
 
     env:
-      UNIVERSAL_LIBRARIES: |
-        - source-path: ./
-
       SKETCHES_REPORTS_PATH: sketches-reports
 
     strategy:
@@ -27,63 +26,79 @@ jobs:
 
       matrix:
         board:
+          # Arduino AVR
           - fqbn: arduino:avr:uno
             platforms: |
               - name: arduino:avr
-          - fqbn: arduino:samd:mkr1000
+          - fqbn: arduino:avr:nano
             platforms: |
-              - name: arduino:samd
+              - name: arduino:avr
+          - fqbn: arduino:avr:mega
+            platforms: |
+              - name: arduino:avr
+          - fqbn: arduino:avr:leonardo
+            platforms: |
+              - name: arduino:avr
+
+          # Arduino SAMD
           - fqbn: arduino:samd:mkrzero
             platforms: |
               - name: arduino:samd
           - fqbn: arduino:samd:mkrwifi1010
             platforms: |
               - name: arduino:samd
-          - fqbn: arduino:samd:mkrfox1200
+          - fqbn: arduino:samd:nano_33_iot
             platforms: |
               - name: arduino:samd
-          - fqbn: arduino:samd:mkrwan1300
+
+          # Arduino SAM (Due)
+          - fqbn: arduino:sam:arduino_due_x_dbg
             platforms: |
-              - name: arduino:samd
-          - fqbn: arduino:samd:mkrwan1310
-            platforms: |
-              - name: arduino:samd
-          - fqbn: arduino:samd:mkrgsm1400
-            platforms: |
-              - name: arduino:samd
-          - fqbn: arduino:samd:mkrnb1500
-            platforms: |
-              - name: arduino:samd
-          - fqbn: arduino:samd:mkrvidor4000
-            platforms: |
-              - name: arduino:samd
-          - fqbn: arduino:mbed_portenta:envie_m7
-            platforms: |
-              - name: arduino:mbed_portenta
-          - fqbn: arduino:mbed_portenta:envie_m4
-            platforms: |
-              - name: arduino:mbed_portenta
+              - name: arduino:sam
+
+          # Arduino mbed (Nano 33 BLE / RP2040 Connect)
           - fqbn: arduino:mbed_nano:nano33ble
             platforms: |
               - name: arduino:mbed_nano
           - fqbn: arduino:mbed_nano:nanorp2040connect
             platforms: |
               - name: arduino:mbed_nano
-          - fqbn: arduino:mbed_edge:edge_control
-            platforms: |
-              - name: arduino:mbed_edge
+
+          # ESP32 family
           - fqbn: esp32:esp32:esp32
             platforms: |
               - name: esp32:esp32
                 source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          - fqbn: esp32:esp32:esp32s2
+            platforms: |
+              - name: esp32:esp32
+                source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          - fqbn: esp32:esp32:esp32c3
+            platforms: |
+              - name: esp32:esp32
+                source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+
+          # ESP8266
+          - fqbn: esp8266:esp8266:thingdev
+            platforms: |
+              - name: esp8266:esp8266
+                source-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+          # RP2040 (Earle Philhower core)
           - fqbn: rp2040:rp2040:rpipico
             platforms: |
               - name: rp2040:rp2040
                 source-url: https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 
+          # STM32
+          - fqbn: STMicroelectronics:stm32:GenF4
+            platforms: |
+              - name: STMicroelectronics:stm32
+                source-url: https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install ESP32 platform dependencies
         if: startsWith(matrix.board.fqbn, 'esp32:esp32')
@@ -92,14 +107,20 @@ jobs:
       - name: Compile examples
         uses: arduino/compile-sketches@v1
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           fqbn: ${{ matrix.board.fqbn }}
           platforms: ${{ matrix.board.platforms }}
+          libraries: |
+            # Install this library from the local path.
+            - source-path: ./
+          sketch-paths: |
+            - examples
           enable-deltas-report: true
           sketches-report-path: ${{ env.SKETCHES_REPORTS_PATH }}
 
-      - name: Save memory usage change report as artifact
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v3
+      - name: Save sketches report as workflow artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.SKETCHES_REPORTS_PATH }}
+          if-no-files-found: error
           path: ${{ env.SKETCHES_REPORTS_PATH }}
+          name: artifacts-${{ env.SKETCHES_REPORTS_PATH }}-${{ strategy.job-index }}
